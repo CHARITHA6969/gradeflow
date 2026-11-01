@@ -3,73 +3,110 @@
 [![Frontend CI](https://github.com/CHARITHA6969/gradeflow/actions/workflows/gradeflow-ci.yml/badge.svg)](https://github.com/CHARITHA6969/gradeflow/actions/workflows/gradeflow-ci.yml)
 [![Backend CI](https://github.com/CHARITHA6969/gradeflow/actions/workflows/gradeflow-backend-ci.yml/badge.svg)](https://github.com/CHARITHA6969/gradeflow/actions/workflows/gradeflow-backend-ci.yml)
 
-**A React + FastAPI prototype for authenticated rubric-first assessment and student submission workflows.**
+**A full-stack prototype for rubric-first assessment and student submission workflows.**
 
-GradeFlow is a learning and product prototype focused on the workflow shared by instructors and students: creating assignments, defining rubric criteria, reviewing submissions, and communicating structured feedback.
+GradeFlow connects instructor and student workflows through a React application and a FastAPI service. The current implementation supports account access, assignment publishing, text submissions, and deterministic rubric validation.
 
-> **Project status:** Prototype / in active development. The repository contains a React front end, a FastAPI backend, PostgreSQL/Alembic persistence, signed bearer sessions, role-based instructor/student access, assignment APIs, student text submissions, deterministic rubric validation, and a demo review workflow. It is not a production grading system and should not be used for consequential academic decisions.
+## Product capabilities
 
-## Why this project
+### Instructor
+- Sign in using an administrator-provisioned account.
+- Create assignments and save them as drafts or publish them for students.
+- View assignments through authenticated API endpoints.
+- Retrieve submissions for an assignment.
+- Review sample records without generating unsupported grades.
 
-Assessment workflows involve more than assigning a score. Instructors need consistent criteria and a review process; students need transparent feedback that explains strengths and areas to improve. GradeFlow explores how a structured rubric and an AI-assisted review step could support that process while keeping the instructor in control.
+### Student
+- Register using an administrator-issued signup code.
+- View active assignments.
+- Submit or update text-based assignment responses.
+- View personal submission history.
 
-## Current interface
+### Backend
+- Signed bearer sessions with role checks.
+- Password hashing using scrypt.
+- SQLAlchemy models for users, assignments, rubric criteria, and submissions.
+- PostgreSQL-compatible database configuration and Alembic migrations.
+- Deterministic rubric-score validation.
+- FastAPI tests for access control, assignments, and submission workflows.
 
-### Instructor experience
-- Dashboard with role-protected assignment creation and publishing backed by FastAPI.
-- Submission lists scoped to instructor access.
-- Sample review modal refuses to invent a grade without attached submission evidence.
-- Rubric view with criteria and performance levels.
-- Submission review modal that explicitly identifies sample records and refuses to invent a grade when no submission evidence is attached.
+## Architecture
 
-### Student experience
-- Active assignments loaded from the API.
-- Student text submissions persisted in the backend; students can update their own submission.
-- Active assignments loaded from the API.
-- Text submissions are stored and can be updated by their owner.
-- Students can view their own submission history.
+```text
+React application
+      |
+      | JSON / bearer token
+      v
+FastAPI application
+  ├── Authentication and role checks
+  ├── Assignment API
+  ├── Student submission API
+  └── Rubric validation
+      |
+      v
+SQLAlchemy ORM
+      |
+      v
+PostgreSQL
+  ├── users
+  ├── assignments
+  ├── rubric_criteria
+  └── submissions
+```
 
 ## Technology
 
-- **Frontend:** React
-- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy 2, signed bearer sessions
-- **Authentication:** scrypt password hashes, eight-hour signed tokens, instructor/student role checks, private student signup code
-- **Database:** PostgreSQL, SQLAlchemy ORM, Alembic migrations (SQLite supported for isolated tests)
-- **API testing:** pytest, FastAPI TestClient, HTTPX
-- **UI:** React components and CSS / inline styling
-- **Testing foundation:** Create React App and React Testing Library dependencies
-- **Assessment logic:** Standalone rubric-score validation utility with unit tests; no automated grading model is currently connected
-
-## Repository layout
-
-```text
-gradeflow/
-├── backend/                # FastAPI service, SQLAlchemy models, Alembic migrations, API tests
-│   ├── app/
-│   │   ├── api/auth.py
-│   │   ├── api/submissions.py
-│   │   ├── core/security.py
-│   │   └── models/
-│   ├── tests/
-│   └── pyproject.toml
-├── data.py                 # Small Pandas dataset exploration script
-├── Titanic-Dataset.csv     # Dataset used by the exploratory script
-└── gradeflow/
-    ├── public/
-    ├── src/
-    │   ├── components/
-    │   │   ├── InstructorDashboard.js
-    │   │   ├── Login.js
-    │   │   └── StudentView.js
-    │   ├── App.js
-    │   └── ...
-    ├── package.json
-    └── README.md
-```
+| Layer | Technologies |
+|---|---|
+| Frontend | React, JavaScript |
+| API | Python, FastAPI, Pydantic |
+| Persistence | SQLAlchemy 2, PostgreSQL, Alembic |
+| Authentication | scrypt password hashes, signed bearer tokens |
+| Testing | React Testing Library, Jest, pytest, FastAPI TestClient |
+| CI | GitHub Actions |
 
 ## Run locally
 
-Prerequisites: Node.js and npm.
+### 1. Start PostgreSQL
+
+From the repository root:
+
+```bash
+cd backend
+docker compose up -d db
+```
+
+### 2. Configure and run the API
+
+From `backend/`, create a virtual environment and install dependencies:
+
+```bash
+python -m venv .venv
+# Activate the environment, then:
+python -m pip install -e ".[dev]"
+```
+
+Set the environment values using `backend/.env.example` as a reference. Do not commit real secrets. At minimum, configure:
+
+- `DATABASE_URL`
+- `CORS_ORIGINS`
+- `GRADEFLOW_SECRET_KEY`
+- `GRADEFLOW_INSTRUCTOR_EMAIL`
+- `GRADEFLOW_INSTRUCTOR_PASSWORD`
+- `GRADEFLOW_STUDENT_SIGNUP_CODE`
+
+Apply migrations and start the API:
+
+```bash
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+API documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+### 3. Start the React application
+
+In another terminal:
 
 ```bash
 cd gradeflow
@@ -77,67 +114,47 @@ npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).
+Set `REACT_APP_API_URL` only when the API is hosted somewhere other than `http://localhost:8000`.
 
-The login screen authenticates against FastAPI. Instructor accounts are provisioned by environment variables; students register with an administrator-issued signup code. The instructor dashboard reads and creates persisted assignments. The student dashboard lists active assignments and persists text submissions. Start the backend and PostgreSQL as described in `backend/README.md`; configure `REACT_APP_API_URL` only if the API is not at `http://localhost:8000`.
+## Tests
 
-Create a production build:
-
-```bash
-npm run build
-```
-
-Run the existing test suite:
-
-```bash
-npm test
-```
-
-## Run the backend
-
-Python 3.10+ is required.
+Backend tests:
 
 ```bash
 cd backend
-python -m venv .venv
-# Activate the environment, then:
-python -m pip install -e ".[dev]"
-uvicorn app.main:app --reload
+pytest
 ```
 
-- Health check: `http://127.0.0.1:8000/health`
-- Interactive API docs: `http://127.0.0.1:8000/docs`
-- Rubric validation: `POST /api/v1/rubrics/validate`
+Frontend tests and build:
 
-Run backend tests from the `backend/` directory with `pytest`. GitHub Actions has separate frontend and backend CI workflows configured to run tests and builds.
+```bash
+cd gradeflow
+npm test -- --watchAll=false
+npm run build
+```
 
-## Current limitations and engineering priorities
+The backend CI workflow also generates Alembic migration SQL and applies migrations against a CI SQLite database.
 
-This repository is an active prototype. Some dashboard summary values and sample review records remain illustrative rather than live academic records.
-- Authentication is a prototype: signed bearer tokens and role checks are implemented, but login rate limiting, password reset, email verification, MFA, and tenant isolation are not yet implemented.
-- The FastAPI backend persists assignments, rubric criteria, user accounts, and student submissions with SQLAlchemy and Alembic migrations. Submission content is currently text-only.
-- The review modal is a demo placeholder. It does not generate grades; no submission evidence or grading backend is connected.
-- AI grading, instructor review/finalization, grade publication, and audit history are not yet implemented. No AI-generated score is presented as a real grade.
-- AI-generated feedback needs rubric-grounded evaluation, transparent evidence, human review, and an appeal/correction workflow.
+## Current limitations
 
-### Roadmap
+This is an active prototype, not a production academic grading system.
 
-1. Separate UI components, domain data, and API/service logic.
-2. Define assignment, submission, rubric, review, and feedback data models.
-3. Add login rate limiting, password reset, MFA, tenant/ownership boundaries, and audit records.
-4. Add attachment storage, secure review workflows, rubric-bound feedback, and instructor grade finalization.
-5. Implement server-side AI orchestration with schema validation and traceable rubric evidence.
-6. Add unit and integration tests for scoring, permissions, and failure cases.
-7. Add CI checks, environment configuration, logging, and deployment documentation.
+- Submission content is text-only; file uploads and private object storage are not implemented.
+- Instructor grading, grade finalization, grade publication, review history, and audit logs are not implemented.
+- The review interface contains illustrative sample records and does not generate grades.
+- Authentication needs additional production controls, including login throttling, password reset, email verification, MFA, token revocation, and tenant isolation.
+- PostgreSQL configuration is present; CI migration verification currently uses SQLite rather than a live PostgreSQL service.
 
-## Design principles
+Do not use this prototype for consequential academic decisions or real student records without appropriate security, privacy, and institutional review.
 
-- Rubric-first assessment rather than opaque scores.
-- Instructor approval for consequential grading decisions.
-- Feedback that is specific, explainable, and actionable.
-- Secure handling of student work and credentials.
-- Reproducible development and transparent limitations.
+## Engineering priorities
+
+1. Add secure submission attachments and private storage.
+2. Build rubric editing and versioned rubric criteria.
+3. Implement evidence-grounded instructor review and grade finalization.
+4. Add audit trails, token lifecycle controls, and stronger authorization boundaries.
+5. Add a live PostgreSQL integration test environment and deployment monitoring.
 
 ---
 
-This project is being developed incrementally. Contributions, issues, and practical suggestions are welcome.
+[Portfolio](https://charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
