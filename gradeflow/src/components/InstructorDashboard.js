@@ -176,8 +176,8 @@ function InstructorDashboard({ onLogout }) {
               </>
             )}
             <div style={{display:'flex',gap:'8px',marginTop:'1rem'}}>
-              <button onClick={() => { alert('Grade finalized!'); setModal(null); }} style={{padding:'8px 16px',background:'#534AB7',color:'#fff',border:'none',borderRadius:'8px',cursor:'pointer'}}>Approve & finalize</button>
-              <button onClick={() => setModal(null)} style={{padding:'8px 16px',border:'1px solid #ddd',borderRadius:'8px',background:'none',cursor:'pointer'}}>Cancel</button>
+              
+              
             </div>
           </div>
         </div>
