@@ -35,7 +35,7 @@ flowchart LR
 2. The API returns a time-limited signed bearer token.
 3. The student lists active assignments and submits text.
 4. The API verifies the student role and that the assignment is accepting submissions.
-5. A student can read their own submissions; instructor-only routes expose submissions for an assignment.
+5. A student can read their own submissions; instructors can list only assignments and submissions they own. Cross-instructor access returns not found.
 
 ## Persistence model
 
@@ -50,7 +50,7 @@ flowchart LR
 - Bearer tokens are signed and expire after eight hours.
 - Student signup requires a configured private code.
 - Production requires a private random `GRADEFLOW_SECRET_KEY`.
-- Authentication throttling, password reset, MFA, token revocation, audit logging, and tenant isolation remain future work.
+- Instructor ownership is enforced for assignments and instructor submission-list routes. Institution-wide tenancy, course enrollment, authentication throttling, password reset, MFA, token revocation, and audit logging remain future work.
 - CI runs API tests and applies database migrations against PostgreSQL 16. The API tests use an isolated in-memory SQLite database.
 
 This is a software prototype, not a production-ready academic records system.
