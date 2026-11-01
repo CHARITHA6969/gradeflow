@@ -6,9 +6,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 COPY pyproject.toml README.md ./
+COPY app ./app
 RUN python -m pip install --no-cache-dir .
 
-COPY app ./app
 COPY migrations ./migrations
 COPY alembic.ini ./
 COPY entrypoint.sh ./
