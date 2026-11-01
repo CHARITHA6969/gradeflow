@@ -69,7 +69,7 @@ uvicorn app.main:app --reload
 pytest
 ```
 
-The API tests use isolated in-memory SQLite databases. GitHub Actions additionally verifies Alembic migration generation and application against PostgreSQL 16.
+The API tests use isolated in-memory SQLite databases. GitHub Actions additionally verifies Alembic migration generation and applies all migrations to PostgreSQL 16.
 
 ## Security notes
 
