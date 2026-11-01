@@ -73,4 +73,4 @@ The API tests use isolated in-memory SQLite databases. GitHub Actions additional
 
 ## Security notes
 
-The API includes role checks, signed eight-hour bearer sessions, scrypt password hashes, and instructor-level assignment ownership. The Compose credentials are development-only. Before a shared deployment, set unique secrets and passwords, restrict network access, and add login throttling, password reset, MFA, audit logging, and institution/tenant governance.
+The API includes role checks, signed eight-hour bearer sessions, scrypt password hashes, and instructor-level assignment ownership. Each assignment is owned by its creating instructor; instructors can list only their own assignments and submission lists. Students can list active assignments and read only their own submissions. The Compose credentials are development-only. Before a shared deployment, set unique secrets and passwords, restrict network access, and add login throttling, password reset, MFA, audit logging, and institution/tenant governance.
