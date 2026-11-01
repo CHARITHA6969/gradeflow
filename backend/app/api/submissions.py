@@ -20,6 +20,7 @@ class SubmissionCreate(BaseModel):
 
 
 class SubmissionRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     assignment_id: int
     student_id: int
