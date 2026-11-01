@@ -27,8 +27,8 @@ GradeFlow connects instructor and student workflows through a React application 
 - Password hashing using scrypt.
 - SQLAlchemy models for users, assignments, rubric criteria, and submissions.
 - PostgreSQL-compatible database configuration and Alembic migrations.
-- Deterministic rubric-score validation.
-- FastAPI tests for access control, assignments, and submission workflows.
+- Deterministic rubric-score validation, with assignment-level rubric totals and unique criterion-name checks.
+- FastAPI tests for login, student registration, access control, assignment validation, and submission workflows.
 
 ## Architecture
 
@@ -133,7 +133,7 @@ npm test -- --watchAll=false
 npm run build
 ```
 
-The backend CI workflow also generates Alembic migration SQL and applies migrations against a CI SQLite database.
+The backend CI workflow runs API tests, generates Alembic migration SQL, and applies migrations to a PostgreSQL 16 service.
 
 ## Current limitations
 
