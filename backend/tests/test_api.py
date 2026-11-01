@@ -222,3 +222,57 @@ def test_student_registration_rejects_invalid_signup_code(monkeypatch):
         },
     )
     assert response.status_code == 403
+
+
+
+def test_assignment_rejects_rubric_points_above_assignment_total():
+    _, instructor_token = create_user("rubric-instructor@example.edu", "instructor")
+    response = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={
+            "title": "Rubric total validation",
+            "total_points": 10,
+            "status": "Draft",
+            "criteria": [
+                {"name": "Analysis", "max_points": 6},
+                {"name": "Evidence", "max_points": 6},
+            ],
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_assignment_rejects_duplicate_rubric_criterion_names_case_insensitively():
+    _, instructor_token = create_user("duplicate-rubric@example.edu", "instructor")
+    response = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={
+            "title": "Duplicate rubric validation",
+            "total_points": 10,
+            "criteria": [
+                {"name": "Critical Analysis", "max_points": 5},
+                {"name": " critical analysis ", "max_points": 5},
+            ],
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_assignment_accepts_valid_rubric_that_sums_to_assignment_total():
+    _, instructor_token = create_user("valid-rubric@example.edu", "instructor")
+    response = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={
+            "title": "Valid rubric",
+            "total_points": 10,
+            "criteria": [
+                {"name": "Analysis", "max_points": 6},
+                {"name": "Evidence", "max_points": 4},
+            ],
+        },
+    )
+    assert response.status_code == 201
+    assert sum(item["max_points"] for item in response.json()["criteria"]) == 10
