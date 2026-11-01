@@ -41,6 +41,7 @@ Configure the backend connection string before starting the API:
 $env:DATABASE_URL="postgresql+psycopg://gradeflow:gradeflow_dev@localhost:5432/gradeflow"
 # macOS/Linux
 export DATABASE_URL="postgresql+psycopg://gradeflow:gradeflow_dev@localhost:5432/gradeflow"
+export CORS_ORIGINS="http://localhost:3000"
 ```
 
 Apply the versioned schema and inspect migration state:
@@ -50,7 +51,7 @@ alembic upgrade head
 alembic current
 ```
 
-The first migration creates assignments and rubric criteria. SQLite remains the default for lightweight local tests; production deployments should use managed PostgreSQL and secure credentials.
+The first migration creates assignments and rubric criteria. SQLite remains the default for lightweight local tests; production deployments should use managed PostgreSQL and secure credentials. Set `CORS_ORIGINS` to a comma-separated allowlist of trusted frontend origins.
 
 ## Test
 
