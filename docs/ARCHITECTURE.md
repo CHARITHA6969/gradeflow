@@ -27,7 +27,7 @@ flowchart LR
 2. The React client sends an authenticated assignment request.
 3. The API validates the instructor role and the assignment schema.
 4. Rubric criteria must have unique names, and their maximum points cannot exceed the assignment total.
-5. The service persists the assignment and its rubric criteria.
+5. The service persists the assignment, its rubric criteria, and the authenticated instructor as its owner.
 
 ### Student submits work
 
@@ -40,7 +40,7 @@ flowchart LR
 ## Persistence model
 
 - `users`: email, password hash, role, creation timestamp.
-- `assignments`: title, description, due date, total points, status.
+- `assignments`: instructor owner, title, description, due date, total points, status.
 - `rubric_criteria`: assignment reference, criterion name, maximum points, order.
 - `submissions`: assignment reference, student reference, text content, status, submission timestamp.
 
