@@ -42,6 +42,10 @@ $env:DATABASE_URL="postgresql+psycopg://gradeflow:gradeflow_dev@localhost:5432/g
 # macOS/Linux
 export DATABASE_URL="postgresql+psycopg://gradeflow:gradeflow_dev@localhost:5432/gradeflow"
 export CORS_ORIGINS="http://localhost:3000"
+export GRADEFLOW_SECRET_KEY="replace-with-a-long-random-secret"
+export GRADEFLOW_INSTRUCTOR_EMAIL="instructor@your-university.edu"
+export GRADEFLOW_INSTRUCTOR_PASSWORD="use-a-unique-password-of-12-or-more-characters"
+export GRADEFLOW_STUDENT_SIGNUP_CODE="issue-a-private-registration-code"
 ```
 
 Apply the versioned schema and inspect migration state:
@@ -51,7 +55,13 @@ alembic upgrade head
 alembic current
 ```
 
-The first migration creates assignments and rubric criteria. SQLite remains the default for lightweight local tests; production deployments should use managed PostgreSQL and secure credentials. Set `CORS_ORIGINS` to a comma-separated allowlist of trusted frontend origins.
+The migrations create assignments, rubric criteria, user accounts, and student submissions. SQLite remains the default for lightweight local tests; production deployments should use managed PostgreSQL and secure credentials. Set `CORS_ORIGINS` to a comma-separated allowlist of trusted frontend origins.
+
+## Authentication and student submissions
+
+Set the environment variables shown above before starting the API. On startup, the service creates the initial instructor account if the configured email does not already exist. Keep the instructor password, signing secret, and student signup code out of source control. Students can register through `POST /api/v1/auth/register` with the private signup code; instructor accounts are not self-registerable. Login is `POST /api/v1/auth/login`; send the returned bearer token on protected API requests. Access tokens expire after eight hours.
+
+Instructors can create and list assignments. Students see active assignments, submit or update their own text submissions, and list only their own submissions. Instructors can list submissions for a given assignment. Submission files, AI grading, grade publication, and audit history are not yet implemented.
 
 ## Test
 
@@ -75,4 +85,4 @@ The response reports whether the scores are internally consistent, the earned an
 
 ## Current boundaries
 
-This is an initial API foundation, not a production grading service. The API now persists assignment and rubric-criterion records through SQLAlchemy, with PostgreSQL configuration, Docker Compose, and an Alembic initial migration. Authentication, authorization, student submissions, AI grading, and persistent audit history are still not implemented. The rubric endpoint performs deterministic validation only; it does not assess student work or generate grades. Add authorization and persistence before connecting real student records.
+This is an initial API foundation, not a production grading service. The API now persists assignment and rubric-criterion records through SQLAlchemy, with PostgreSQL configuration, Docker Compose, and an Alembic initial migration. AI grading, grade publication, submission file storage, and persistent audit history are still not implemented. The rubric endpoint performs deterministic validation only; it does not assess student work or generate grades. Add authorization and persistence before connecting real student records.
