@@ -4,7 +4,7 @@
 
 GradeFlow is a learning and product prototype focused on the workflow shared by instructors and students: creating assignments, defining rubric criteria, reviewing submissions, and communicating structured feedback.
 
-> **Project status:** Prototype / in active development. The current repository contains a React front end with sample data and an experimental AI-review interaction. It is not a production grading system and should not be used for consequential academic decisions.
+> **Project status:** Prototype / in active development. The current repository contains a React front end with sample data, a demo review workflow, and a standalone rubric-score validation utility. It is not a production grading system and should not be used for consequential academic decisions.
 
 ## Why this project
 
@@ -16,7 +16,7 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 - Dashboard with example assignment and submission summaries.
 - Assignment views and a new-assignment form concept.
 - Rubric view with criteria and performance levels.
-- Submission review modal with a structured score breakdown and feedback summary.
+- Submission review modal that explicitly identifies sample records and refuses to invent a grade when no submission evidence is attached.
 
 ### Student experience
 - Grade overview and assignment status.
@@ -29,7 +29,7 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 - **Frontend:** React
 - **UI:** React components and CSS / inline styling
 - **Testing foundation:** Create React App and React Testing Library dependencies
-- **AI exploration:** An early Anthropic API request is present in the instructor review flow
+- **Assessment logic:** Standalone rubric-score validation utility with unit tests; no automated grading model is currently connected
 
 ## Repository layout
 
@@ -81,7 +81,7 @@ This repository is an early prototype. In particular:
 - The UI currently uses hard-coded example assignments, submissions, and grades.
 - The login screen is a role-selection demo, not real authentication or authorization.
 - There is no production backend, database, or persistent submission store in the current application.
-- The AI review path is experimental. It must not be treated as a validated grading model.
+- The review modal is a demo placeholder. It does not generate grades; no submission evidence or grading backend is connected.
 - The current browser-side API approach is not suitable for production secrets. API credentials should be held by a secured server-side service, never shipped to the browser.
 - AI-generated feedback needs rubric-grounded evaluation, transparent evidence, human review, and an appeal/correction workflow.
 
@@ -90,9 +90,10 @@ This repository is an early prototype. In particular:
 1. Separate UI components, domain data, and API/service logic.
 2. Define assignment, submission, rubric, review, and feedback data models.
 3. Add a secure backend and proper instructor/student authorization.
-4. Implement server-side AI orchestration with schema validation and traceable rubric evidence.
-5. Add unit and integration tests for scoring, permissions, and failure cases.
-6. Add CI checks, environment configuration, logging, and deployment documentation.
+4. Connect validated rubric scoring to persisted submission evidence and add review/audit records.
+5. Implement server-side AI orchestration with schema validation and traceable rubric evidence.
+6. Add unit and integration tests for scoring, permissions, and failure cases.
+7. Add CI checks, environment configuration, logging, and deployment documentation.
 
 ## Design principles
 
