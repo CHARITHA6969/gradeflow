@@ -70,7 +70,9 @@ npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).\n\nThe instructor dashboard reads persisted assignments from the API and posts new assignments to it. Start the backend and PostgreSQL as described in `backend/README.md`; configure `REACT_APP_API_URL` only if the API is not at `http://localhost:8000`.
+The development server starts at [http://localhost:3000](http://localhost:3000).
+
+The instructor dashboard reads persisted assignments from the API and posts new assignments to it. Start the backend and PostgreSQL as described in `backend/README.md`; configure `REACT_APP_API_URL` only if the API is not at `http://localhost:8000`.
 
 Create a production build:
 
