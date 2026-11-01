@@ -37,5 +37,9 @@ jobs:
       - name: Run unit and smoke tests
         run: CI=true npm test -- --watchAll=false
 
+
+      - name: Build frontend container image
+        run: docker build -t gradeflow-web:ci .
+
       - name: Build production bundle
         run: npm run build
