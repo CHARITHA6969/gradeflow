@@ -26,6 +26,7 @@ function InstructorDashboard({ onLogout }) {
   const [assignmentDescription, setAssignmentDescription] = useState('');
   const [assignmentPoints, setAssignmentPoints] = useState('100');
   const [assignmentDueDate, setAssignmentDueDate] = useState('');
+  const [assignmentStatus, setAssignmentStatus] = useState('Active');
   const [savingAssignment, setSavingAssignment] = useState(false);
   const [assignmentError, setAssignmentError] = useState('');
 
@@ -47,7 +48,7 @@ function InstructorDashboard({ onLogout }) {
         description: assignmentDescription,
         total_points: Number(assignmentPoints),
         due_date: assignmentDueDate || null,
-        status: 'Draft',
+        status: assignmentStatus,
         criteria: [],
       });
       setApiAssignments((current) => [created, ...current]);
@@ -55,6 +56,7 @@ function InstructorDashboard({ onLogout }) {
       setAssignmentDescription('');
       setAssignmentPoints('100');
       setAssignmentDueDate('');
+      setAssignmentStatus('Active');
       setApiStatus('Connected to FastAPI');
       setTab('assignments');
     } catch (error) {
@@ -184,6 +186,13 @@ function InstructorDashboard({ onLogout }) {
                 </div>
               ))}
               <div style={{gridColumn:'1/-1'}}><label style={{display:'block',fontSize:'13px',marginBottom:'6px'}}>Description</label><textarea value={assignmentDescription} onChange={(e) => setAssignmentDescription(e.target.value)} style={{width:'100%',minHeight:'72px',padding:'8px',border:'1px solid #ddd',borderRadius:'8px',boxSizing:'border-box'}} /></div>
+              <div>
+                <label style={{display:'block',fontSize:'13px',marginBottom:'6px'}}>Publication status</label>
+                <select value={assignmentStatus} onChange={(e) => setAssignmentStatus(e.target.value)} style={{width:'100%',padding:'8px',border:'1px solid #ddd',borderRadius:'8px'}}>
+                  <option value="Draft">Save as draft</option>
+                  <option value="Active">Publish for students</option>
+                </select>
+              </div>
               {assignmentError && <p role="alert" style={{gridColumn:'1/-1',color:'#A32D2D'}}>{assignmentError}</p>}
               <div style={{gridColumn:'1/-1',display:'flex',gap:'8px',marginTop:'1rem'}}>
                 <button type="submit" disabled={savingAssignment || apiStatus !== 'Connected to FastAPI'} style={{padding:'9px 18px',background:'#534AB7',color:'#fff',border:'none',borderRadius:'8px',cursor:'pointer',fontWeight:600,opacity:savingAssignment || apiStatus !== 'Connected to FastAPI' ? 0.6 : 1}}>{savingAssignment ? 'Saving...' : 'Save assignment to API'}</button>
