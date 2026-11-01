@@ -16,19 +16,18 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 ## Current interface
 
 ### Instructor experience
-- Dashboard with assignment creation backed by FastAPI and PostgreSQL.
-- Role-protected assignment listing and creation.
-- Sample review modal still refuses to invent a grade without attached submission evidence.
-- Assignment views and a new-assignment form concept.
+- Dashboard with role-protected assignment creation and publishing backed by FastAPI.
+- Submission lists scoped to instructor access.
+- Sample review modal refuses to invent a grade without attached submission evidence.
 - Rubric view with criteria and performance levels.
 - Submission review modal that explicitly identifies sample records and refuses to invent a grade when no submission evidence is attached.
 
 ### Student experience
 - Active assignments loaded from the API.
 - Student text submissions persisted in the backend; students can update their own submission.
-- Score breakdown by rubric criterion.
-- Feedback view showing positive observations and improvement areas.
-- Pending-assignment view.
+- Active assignments loaded from the API.
+- Text submissions are stored and can be updated by their owner.
+- Students can view their own submission history.
 
 ## Technology
 
@@ -46,7 +45,11 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 ```text
 gradeflow/
 ├── backend/                # FastAPI service, SQLAlchemy models, Alembic migrations, API tests
-│   ├── app/\n│   │   ├── api/auth.py\n│   │   ├── api/submissions.py\n│   │   ├── core/security.py\n│   │   └── models/
+│   ├── app/
+│   │   ├── api/auth.py
+│   │   ├── api/submissions.py
+│   │   ├── core/security.py
+│   │   └── models/
 │   ├── tests/
 │   └── pyproject.toml
 ├── data.py                 # Small Pandas dataset exploration script
@@ -110,9 +113,7 @@ Run backend tests from the `backend/` directory with `pytest`. GitHub Actions ha
 
 ## Current limitations and engineering priorities
 
-This repository is an early prototype. In particular:
-
-- The UI currently uses hard-coded example assignments, submissions, and grades.
+This repository is an active prototype. Some dashboard summary values and sample review records remain illustrative rather than live academic records.
 - Authentication is a prototype: signed bearer tokens and role checks are implemented, but login rate limiting, password reset, email verification, MFA, and tenant isolation are not yet implemented.
 - The FastAPI backend persists assignments, rubric criteria, user accounts, and student submissions with SQLAlchemy and Alembic migrations. Submission content is currently text-only.
 - The review modal is a demo placeholder. It does not generate grades; no submission evidence or grading backend is connected.
