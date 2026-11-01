@@ -157,4 +157,4 @@ Do not use this prototype for consequential academic decisions or real student r
 
 ---
 
-[Portfolio](https://charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
+[Portfolio](https://charitha6969.github.io/charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
