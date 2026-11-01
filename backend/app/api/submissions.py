@@ -74,7 +74,9 @@ def assignment_submissions(
     user: User = Depends(require_role("instructor")),
     db: Session = Depends(get_db),
 ):
-    if db.get(Assignment, assignment_id) is None:
+    assignment = db.get(Assignment, assignment_id)
+    if assignment is None or assignment.instructor_id != user.id:
+        # Avoid revealing whether another instructor owns the assignment.
         raise HTTPException(status_code=404, detail="Assignment not found.")
     return list(db.scalars(
         select(Submission).where(Submission.assignment_id == assignment_id).order_by(Submission.submitted_at.desc())
