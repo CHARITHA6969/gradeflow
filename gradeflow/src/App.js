@@ -2,15 +2,26 @@ import { useState } from 'react';
 import Login from './components/Login';
 import InstructorDashboard from './components/InstructorDashboard';
 import StudentView from './components/StudentView';
+import { setAccessToken } from './api/assignments';
 
 function App() {
-  const [screen, setScreen] = useState('login');
+  const [session, setSession] = useState(null);
+
+  const handleLogin = (nextSession) => {
+    setAccessToken(nextSession.access_token);
+    setSession(nextSession.user);
+  };
+
+  const handleLogout = () => {
+    setAccessToken(null);
+    setSession(null);
+  };
 
   return (
     <div>
-      {screen === 'login' && <Login onLogin={setScreen} />}
-      {screen === 'instructor' && <InstructorDashboard onLogout={() => setScreen('login')} />}
-      {screen === 'student' && <StudentView onLogout={() => setScreen('login')} />}
+      {!session && <Login onLogin={handleLogin} />}
+      {session?.role === 'instructor' && <InstructorDashboard onLogout={handleLogout} />}
+      {session?.role === 'student' && <StudentView onLogout={handleLogout} />}
     </div>
   );
 }
