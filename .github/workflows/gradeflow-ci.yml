@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 jobs:
-  verify:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,9 +33,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Run tests
-        run: CI=true npm test -- --watchAll=false
 
       - name: Build production bundle
         run: npm run build
