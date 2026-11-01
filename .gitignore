@@ -1,0 +1,21 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node / React
+node_modules/
+build/
+coverage/
+
+# Local environment and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+.idea/
