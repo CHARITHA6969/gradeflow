@@ -34,5 +34,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run unit and smoke tests
+        run: CI=true npm test -- --watchAll=false
+
       - name: Build production bundle
         run: npm run build
