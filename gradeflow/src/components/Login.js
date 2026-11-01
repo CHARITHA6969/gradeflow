@@ -19,7 +19,7 @@ function Login({ onLogin }) {
     <div style={{minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center',background:'#f5f5f5'}}>
       <div style={{background:'#fff',padding:'2rem',borderRadius:'12px',width:'360px',boxShadow:'0 2px 16px rgba(0,0,0,0.1)'}}>
         <h2>GradeFlow</h2>
-        <p style={{color:'#666',fontSize:'13px',marginBottom:'1rem'}}>AI-powered grading platform</p>
+        <p style={{color:'#666',fontSize:'13px',marginBottom:'1rem'}}>Instructor and student demo — authentication is not enabled</p>
         <div style={{display:'flex',gap:'8px',marginBottom:'1rem'}}>
           <button onClick={() => setRole('instructor')} style={btn('instructor')}>Instructor</button>
           <button onClick={() => setRole('student')} style={btn('student')}>Student</button>
