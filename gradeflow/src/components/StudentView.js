@@ -62,6 +62,9 @@ function StudentView({ onLogout }) {
       </div>
 
       <div style={{maxWidth:'900px',margin:'0 auto',padding:'1.5rem'}}>
+        <div role="note" style={{padding:'9px 12px',marginBottom:'1rem',background:'#FAEEDA',color:'#854F0B',borderRadius:'8px',fontSize:'12px'}}>
+          SAMPLE DATA — these students, assignments, grades, and timestamps are illustrative demo content, not live academic records.
+        </div>
         {tab === 'grades' && (
           <>
             <div style={{marginBottom:'1.5rem'}}>
