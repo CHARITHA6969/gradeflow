@@ -6,6 +6,8 @@ import secrets
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 SECRET_KEY = os.getenv("GRADEFLOW_SECRET_KEY", "local-development-only-change-this-secret")
+if os.getenv("APP_ENV", "development").lower() == "production" and SECRET_KEY == "local-development-only-change-this-secret":
+    raise RuntimeError("GRADEFLOW_SECRET_KEY must be set to a private random value in production.")
 
 
 def hash_password(password: str) -> str:
