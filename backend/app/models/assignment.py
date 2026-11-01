@@ -11,6 +11,7 @@ class Assignment(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(160), nullable=False, index=True)
+    instructor_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     description: Mapped[str] = mapped_column(Text, default="", nullable=False)
     due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     total_points: Mapped[float] = mapped_column(Float, default=100, nullable=False)
