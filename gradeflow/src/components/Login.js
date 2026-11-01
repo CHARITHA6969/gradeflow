@@ -33,7 +33,7 @@ function Login({ onLogin }) {
           onClick={() => onLogin(role)}
           style={{width:'100%',padding:'10px',background:'#534AB7',color:'#fff',border:'none',borderRadius:'8px',cursor:'pointer',fontSize:'14px',fontWeight:600}}
         >
-          Sign in
+          Enter demo
         </button>
       </div>
     </div>
