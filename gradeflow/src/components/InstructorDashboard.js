@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createAssignment, getAssignments } from '../api/assignments';
 
 const submissions = [
   { student: 'Aisha Johnson', assignment: 'REST API Design', time: '2h ago', status: 'Pending' },
@@ -19,6 +20,46 @@ function InstructorDashboard({ onLogout }) {
   const [modal, setModal] = useState(null);
   const [aiResult, setAiResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [apiAssignments, setApiAssignments] = useState([]);
+  const [apiStatus, setApiStatus] = useState('Connecting to GradeFlow API...');
+  const [assignmentTitle, setAssignmentTitle] = useState('');
+  const [assignmentDescription, setAssignmentDescription] = useState('');
+  const [assignmentPoints, setAssignmentPoints] = useState('100');
+  const [savingAssignment, setSavingAssignment] = useState(false);
+  const [assignmentError, setAssignmentError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    getAssignments()
+      .then((items) => { if (active) { setApiAssignments(items); setApiStatus('Connected to FastAPI'); } })
+      .catch(() => { if (active) setApiStatus('API unavailable — showing sample data'); });
+    return () => { active = false; };
+  }, []);
+
+  const handleCreateAssignment = async (event) => {
+    event.preventDefault();
+    setSavingAssignment(true);
+    setAssignmentError('');
+    try {
+      const created = await createAssignment({
+        title: assignmentTitle,
+        description: assignmentDescription,
+        total_points: Number(assignmentPoints),
+        status: 'Draft',
+        criteria: [],
+      });
+      setApiAssignments((current) => [created, ...current]);
+      setAssignmentTitle('');
+      setAssignmentDescription('');
+      setAssignmentPoints('100');
+      setApiStatus('Connected to FastAPI');
+      setTab('assignments');
+    } catch (error) {
+      setAssignmentError(error.message || 'Could not save assignment.');
+    } finally {
+      setSavingAssignment(false);
+    }
+  };
 
   const navBtn = (t) => ({
     padding: '6px 14px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '13px',
@@ -47,6 +88,7 @@ function InstructorDashboard({ onLogout }) {
       </div>
 
       <div style={{maxWidth:'1000px',margin:'0 auto',padding:'1.5rem'}}>
+        <div role="status" style={{padding:'9px 12px',marginBottom:'1rem',background:apiStatus === 'Connected to FastAPI' ? '#EAF3DE' : '#FAEEDA',color:apiStatus === 'Connected to FastAPI' ? '#3B6D11' : '#854F0B',borderRadius:'8px',fontSize:'12px'}}>{apiStatus}</div>
         <div role="note" style={{padding:'9px 12px',marginBottom:'1rem',background:'#FAEEDA',color:'#854F0B',borderRadius:'8px',fontSize:'12px'}}>
           SAMPLE DATA — these students, assignments, grades, and timestamps are illustrative demo content, not live academic records.
         </div>
@@ -89,6 +131,7 @@ function InstructorDashboard({ onLogout }) {
         {tab === 'assignments' && (
           <div style={{background:'#fff',borderRadius:'10px',padding:'1rem'}}>
             <h2 style={{fontSize:'16px',marginBottom:'1rem'}}>Assignments</h2>
+            {apiAssignments.map((item) => <div key={item.id} style={{padding:'10px 8px',borderBottom:'1px solid #eee'}}><strong>{item.title}</strong><span style={{marginLeft:'8px',fontSize:'12px',color:'#777'}}>{item.status} · {item.total_points} points</span></div>)}
             <table style={{width:'100%',borderCollapse:'collapse',fontSize:'13px'}}>
               <thead><tr>{['Title','Due','Submissions','Avg','Status'].map(h => <th key={h} style={{textAlign:'left',padding:'8px',borderBottom:'1px solid #eee',color:'#888',fontWeight:400}}>{h}</th>)}</tr></thead>
               <tbody>
@@ -130,18 +173,20 @@ function InstructorDashboard({ onLogout }) {
         {tab === 'create' && (
           <div style={{background:'#fff',borderRadius:'10px',padding:'1.5rem'}}>
             <h2 style={{marginBottom:'1.5rem'}}>New Assignment</h2>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
+            <form onSubmit={handleCreateAssignment} style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem'}}>
               {[['Title','text'],['Due Date','date'],['Points','number']].map(([l,t]) => (
                 <div key={l}>
                   <label style={{display:'block',fontSize:'13px',marginBottom:'6px',color:'#555'}}>{l}</label>
-                  <input type={t} style={{width:'100%',padding:'8px',border:'1px solid #ddd',borderRadius:'8px',boxSizing:'border-box'}} />
+                  <input type={t} value={l === 'Title' ? assignmentTitle : l === 'Points' ? assignmentPoints : undefined} onChange={l === 'Title' ? (e) => setAssignmentTitle(e.target.value) : l === 'Points' ? (e) => setAssignmentPoints(e.target.value) : undefined} required={l !== 'Due Date'} style={{width:'100%',padding:'8px',border:'1px solid #ddd',borderRadius:'8px',boxSizing:'border-box'}} />
                 </div>
               ))}
+              <div style={{gridColumn:'1/-1'}}><label style={{display:'block',fontSize:'13px',marginBottom:'6px'}}>Description</label><textarea value={assignmentDescription} onChange={(e) => setAssignmentDescription(e.target.value)} style={{width:'100%',minHeight:'72px',padding:'8px',border:'1px solid #ddd',borderRadius:'8px',boxSizing:'border-box'}} /></div>
+              {assignmentError && <p role="alert" style={{gridColumn:'1/-1',color:'#A32D2D'}}>{assignmentError}</p>}
               <div style={{gridColumn:'1/-1',display:'flex',gap:'8px',marginTop:'1rem'}}>
-                <button onClick={() => { alert('Assignment created!'); setTab('assignments'); }} style={{padding:'9px 18px',background:'#534AB7',color:'#fff',border:'none',borderRadius:'8px',cursor:'pointer',fontWeight:600}}>Create assignment</button>
+                <button type="submit" disabled={savingAssignment || apiStatus !== 'Connected to FastAPI'} style={{padding:'9px 18px',background:'#534AB7',color:'#fff',border:'none',borderRadius:'8px',cursor:'pointer',fontWeight:600,opacity:savingAssignment || apiStatus !== 'Connected to FastAPI' ? 0.6 : 1}}>{savingAssignment ? 'Saving...' : 'Save assignment to API'}</button>
                 <button style={{padding:'9px 18px',border:'1px solid #ddd',borderRadius:'8px',background:'none',cursor:'pointer'}}>Save as draft</button>
               </div>
-            </div>
+            </form>
           </div>
         )}
       </div>
