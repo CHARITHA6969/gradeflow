@@ -26,36 +26,11 @@ function InstructorDashboard({ onLogout }) {
     fontWeight: tab === t ? 600 : 400,
   });
 
-  const openReview = async (sub) => {
+  // The current repository has no submission-file storage or trusted grading API.
+  // Never generate or display a score from a student's name and assignment title alone.
+  const openReview = (sub) => {
     setModal(sub);
     setAiResult(null);
-    setLoading(true);
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: 'You are an AI grading assistant. Respond ONLY with a JSON object, no markdown. Fields: summary (string), scores (array of {criterion, earned, total}), tags (array of strings).',
-          messages: [{ role: 'user', content: `Grade this: Student: ${sub.student}, Assignment: ${sub.assignment}. Rubric: Endpoint design (30pts), Request/response (25pts), Authentication (25pts), Documentation (20pts).` }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content.map((b) => b.text || '').join('');
-      setAiResult(JSON.parse(text));
-    } catch {
-      setAiResult({
-        summary: `${sub.student}'s submission shows solid understanding. Authentication needs improvement.`,
-        scores: [
-          { criterion: 'Endpoint design', earned: 26, total: 30 },
-          { criterion: 'Request/response', earned: 20, total: 25 },
-          { criterion: 'Authentication', earned: 16, total: 25 },
-          { criterion: 'Documentation', earned: 15, total: 20 },
-        ],
-        tags: ['Good REST naming', 'Missing rate limiting', 'Incomplete docs'],
-      });
-    }
     setLoading(false);
   };
 
@@ -176,6 +151,12 @@ function InstructorDashboard({ onLogout }) {
               <button onClick={() => setModal(null)} style={{background:'none',border:'none',cursor:'pointer',fontSize:'20px'}}>×</button>
             </div>
             {loading && <div style={{padding:'1rem',background:'#EEEDFE',borderRadius:'8px',color:'#3C3489'}}>⏳ AI is analyzing this submission...</div>}
+            {!loading && !aiResult && (
+              <div role="status" style={{padding:'1rem',background:'#FAEEDA',borderRadius:'8px',color:'#854F0B',fontSize:'13px',lineHeight:1.6}}>
+                <strong>Demo review only — no grade generated.</strong>
+                <p style={{margin:'8px 0 0'}}>This sample record does not include a student submission. Connect a secure backend and attach the actual submission before requesting rubric-based feedback. GradeFlow will not infer a score from a student's name or assignment title.</p>
+              </div>
+            )}
             {aiResult && (
               <>
                 <div style={{background:'#f5f5f5',borderRadius:'8px',padding:'1rem',fontSize:'13px',lineHeight:1.7,marginBottom:'1rem'}}>{aiResult.summary}</div>
