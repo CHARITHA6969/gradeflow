@@ -150,7 +150,7 @@ npm test -- --watchAll=false
 npm run build
 ```
 
-The backend CI workflow runs API tests, generates Alembic migration SQL, and applies migrations to a PostgreSQL 16 service.
+The backend CI workflow runs API tests, generates Alembic migration SQL, applies migrations to a PostgreSQL 16 service, and builds the API container. The frontend workflow runs tests, builds the React bundle, and builds the Nginx container.
 
 ## Current limitations
 
