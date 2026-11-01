@@ -51,3 +51,5 @@ jobs:
         run: alembic upgrade head --sql
       - name: Apply migrations to PostgreSQL
         run: alembic upgrade head
+      - name: Build backend container image
+        run: docker build -t gradeflow-api:ci .
