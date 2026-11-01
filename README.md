@@ -30,6 +30,8 @@ GradeFlow connects instructor and student workflows through a React application 
 - Deterministic rubric-score validation, with assignment-level rubric totals and unique criterion-name checks.
 - FastAPI tests for login, student registration, access control, assignment validation, and submission workflows.
 
+**Architecture:** [System design, request flows, persistence model, and security boundaries](docs/ARCHITECTURE.md).
+
 ## Architecture
 
 ```text
