@@ -6,7 +6,7 @@ from app.api.assignments import router as assignments_router
 
 app = FastAPI(
     title="GradeFlow API",
-    description="Rubric-first assessment workflow API. Prototype; no authentication or persistence yet.",
+    description="Rubric-first assessment workflow API with PostgreSQL-ready assignment persistence.",
     version="0.1.0",
 )
 
