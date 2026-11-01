@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class CriterionCreate(BaseModel):
@@ -15,6 +15,16 @@ class AssignmentCreate(BaseModel):
     total_points: float = Field(default=100, gt=0, le=10000)
     status: str = Field(default="Draft", pattern="^(Draft|Active|Closed)$")
     criteria: list[CriterionCreate] = Field(default_factory=list, max_length=100)
+
+    @model_validator(mode="after")
+    def validate_rubric(self):
+        normalized_names = [criterion.name.strip().casefold() for criterion in self.criteria]
+        if len(normalized_names) != len(set(normalized_names)):
+            raise ValueError("Rubric criterion names must be unique.")
+        rubric_points = sum(criterion.max_points for criterion in self.criteria)
+        if rubric_points > self.total_points:
+            raise ValueError("Rubric criterion points cannot exceed the assignment total.")
+        return self
 
 
 class CriterionRead(BaseModel):
