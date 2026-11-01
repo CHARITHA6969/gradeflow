@@ -276,3 +276,40 @@ def test_assignment_accepts_valid_rubric_that_sums_to_assignment_total():
     )
     assert response.status_code == 201
     assert sum(item["max_points"] for item in response.json()["criteria"]) == 10
+
+
+
+def test_assignment_rejects_blank_title_and_blank_rubric_names():
+    _, instructor_token = create_user("blank-validation@example.edu", "instructor")
+    blank_title = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={"title": "   "},
+    )
+    blank_criterion = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={
+            "title": "Blank criterion",
+            "criteria": [{"name": "   ", "max_points": 5}],
+        },
+    )
+    assert blank_title.status_code == 422
+    assert blank_criterion.status_code == 422
+
+
+def test_assignment_accepts_decimal_rubric_points_without_float_rounding_errors():
+    _, instructor_token = create_user("decimal-validation@example.edu", "instructor")
+    response = client.post(
+        "/api/v1/assignments",
+        headers=auth(instructor_token),
+        json={
+            "title": "Decimal rubric",
+            "total_points": 0.3,
+            "criteria": [
+                {"name": "Criterion A", "max_points": 0.1},
+                {"name": "Criterion B", "max_points": 0.2},
+            ],
+        },
+    )
+    assert response.status_code == 201
