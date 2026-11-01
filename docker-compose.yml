@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gradeflow
+      POSTGRES_USER: gradeflow
+      POSTGRES_PASSWORD: gradeflow_dev
+    volumes:
+      - gradeflow_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradeflow -d gradeflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      APP_ENV: development
+      DATABASE_URL: postgresql+psycopg://gradeflow:gradeflow_dev@db:5432/gradeflow
+      CORS_ORIGINS: http://localhost:3000
+      GRADEFLOW_SECRET_KEY: ${GRADEFLOW_SECRET_KEY:-local-compose-change-this-secret}
+      GRADEFLOW_INSTRUCTOR_EMAIL: ${GRADEFLOW_INSTRUCTOR_EMAIL:-instructor@example.edu}
+      GRADEFLOW_INSTRUCTOR_PASSWORD: ${GRADEFLOW_INSTRUCTOR_PASSWORD:-local-instructor-password-123}
+      GRADEFLOW_STUDENT_SIGNUP_CODE: ${GRADEFLOW_STUDENT_SIGNUP_CODE:-local-student-signup-code}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./gradeflow
+      args:
+        REACT_APP_API_URL: ""
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  gradeflow_postgres:
