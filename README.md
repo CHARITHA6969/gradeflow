@@ -74,12 +74,13 @@ PostgreSQL
 Requirements: Docker Desktop or Docker Engine with the Compose plugin.
 
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
 
 Open the app at [http://localhost:3000](http://localhost:3000), API docs at [http://localhost:8000/docs](http://localhost:8000/docs), and health at [http://localhost:8000/health](http://localhost:8000/health).
 
-The default local instructor login is `instructor@example.edu` / `local-instructor-password-123`. The default student signup code is `local-student-signup-code`. These values are intentionally for local development only. Override them through environment variables before running Compose. Do not expose this Compose setup to the public internet.
+The checked-in `.env.example` contains development-only credentials for the initial instructor and student signup code. Copy it to `.env`, then change the values before starting. Do not reuse these defaults or expose this Compose setup to the public internet.
 
 Stop the stack with `docker compose down`; add `-v` only when you intentionally want to delete the local PostgreSQL data volume.
 
