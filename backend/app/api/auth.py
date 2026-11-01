@@ -1,3 +1,4 @@
+import hmac
 import os
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -63,7 +64,7 @@ def require_role(role: str):
 @router.post("/register", response_model=TokenResponse, status_code=201)
 def register_student(payload: StudentRegistration, db: Session = Depends(get_db)):
     signup_code = os.getenv("GRADEFLOW_STUDENT_SIGNUP_CODE")
-    if not signup_code or payload.signup_code != signup_code:
+    if not signup_code or not hmac.compare_digest(payload.signup_code, signup_code):
         raise HTTPException(status_code=403, detail="Student registration is not enabled or the signup code is invalid.")
     email = str(payload.email).lower()
     if db.scalar(select(User).where(User.email == email)):
