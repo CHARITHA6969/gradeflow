@@ -313,3 +313,49 @@ def test_assignment_accepts_decimal_rubric_points_without_float_rounding_errors(
         },
     )
     assert response.status_code == 201
+
+
+
+def test_instructors_only_list_their_own_assignments_and_submission_records():
+    _, first_instructor_token = create_user("first-instructor@example.edu", "instructor")
+    _, second_instructor_token = create_user("second-instructor@example.edu", "instructor")
+    student, student_token = create_user("owner-check-student@example.edu", "student")
+
+    created = client.post(
+        "/api/v1/assignments",
+        headers=auth(first_instructor_token),
+        json={"title": "Private instructor assignment", "status": "Active"},
+    )
+    assert created.status_code == 201
+    assignment_id = created.json()["id"]
+
+    submitted = client.post(
+        f"/api/v1/assignments/{assignment_id}/submissions",
+        headers=auth(student_token),
+        json={"content": "Student response for the owned assignment."},
+    )
+    assert submitted.status_code == 201
+    assert submitted.json()["student_id"] == student.id
+
+    first_list = client.get(
+        "/api/v1/assignments",
+        headers=auth(first_instructor_token),
+    )
+    second_list = client.get(
+        "/api/v1/assignments",
+        headers=auth(second_instructor_token),
+    )
+    assert [item["id"] for item in first_list.json()] == [assignment_id]
+    assert second_list.json() == []
+
+    owner_submissions = client.get(
+        f"/api/v1/assignments/{assignment_id}/submissions",
+        headers=auth(first_instructor_token),
+    )
+    other_submissions = client.get(
+        f"/api/v1/assignments/{assignment_id}/submissions",
+        headers=auth(second_instructor_token),
+    )
+    assert owner_submissions.status_code == 200
+    assert len(owner_submissions.json()) == 1
+    assert other_submissions.status_code == 404
