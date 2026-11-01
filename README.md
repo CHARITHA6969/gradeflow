@@ -112,14 +112,14 @@ This repository is an early prototype. In particular:
 - The login screen is a role-selection demo, not real authentication or authorization.
 - The FastAPI backend persists assignments and rubric criteria with SQLAlchemy and Alembic migrations. Authentication, authorization, student submissions, and persistent review history are not yet implemented.
 - The review modal is a demo placeholder. It does not generate grades; no submission evidence or grading backend is connected.
-- The current browser-side API approach is not suitable for production secrets. API credentials should be held by a secured server-side service, never shipped to the browser.
+- The current assignment API does not yet include authentication or authorization. Any future AI provider integration must keep credentials server-side and must never ship secrets in the browser bundle.
 - AI-generated feedback needs rubric-grounded evaluation, transparent evidence, human review, and an appeal/correction workflow.
 
 ### Roadmap
 
 1. Separate UI components, domain data, and API/service logic.
 2. Define assignment, submission, rubric, review, and feedback data models.
-3. Extend the FastAPI service with persistence, migrations, and proper instructor/student authorization.
+3. Add authentication and instructor/student authorization to the persisted FastAPI service.
 4. Connect validated rubric scoring to persisted submission evidence and add review/audit records.
 5. Implement server-side AI orchestration with schema validation and traceable rubric evidence.
 6. Add unit and integration tests for scoring, permissions, and failure cases.
