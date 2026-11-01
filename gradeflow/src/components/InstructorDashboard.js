@@ -175,10 +175,6 @@ function InstructorDashboard({ onLogout }) {
                 <div style={{marginTop:'1rem'}}>{aiResult.tags.map((t,i) => <span key={i} style={{display:'inline-block',background:'#f0f0f0',borderRadius:'6px',padding:'3px 8px',fontSize:'11px',margin:'2px'}}>{t}</span>)}</div>
               </>
             )}
-            <div style={{display:'flex',gap:'8px',marginTop:'1rem'}}>
-              
-              
-            </div>
           </div>
         </div>
       )}
