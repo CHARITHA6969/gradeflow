@@ -31,5 +31,7 @@ jobs:
         run: python -m pip install -e ".[dev]"
       - name: Run API tests
         run: pytest
-      - name: Verify migration scripts
+      - name: Verify migration SQL generation
         run: alembic upgrade head --sql
+      - name: Apply migration to CI SQLite database
+        run: alembic upgrade head
