@@ -17,6 +17,22 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: gradeflow
+          POSTGRES_PASSWORD: gradeflow_dev
+          POSTGRES_DB: gradeflow
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U gradeflow -d gradeflow"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+psycopg://gradeflow:gradeflow_dev@localhost:5432/gradeflow
     defaults:
       run:
         working-directory: backend
@@ -33,5 +49,5 @@ jobs:
         run: pytest
       - name: Verify migration SQL generation
         run: alembic upgrade head --sql
-      - name: Apply migration to CI SQLite database
+      - name: Apply migrations to PostgreSQL
         run: alembic upgrade head
