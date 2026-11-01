@@ -30,7 +30,8 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 ## Technology
 
 - **Frontend:** React
-- **Backend:** Python, FastAPI, Pydantic
+- **Backend:** Python, FastAPI, Pydantic, SQLAlchemy 2
+- **Database:** PostgreSQL, SQLAlchemy ORM, Alembic migrations (SQLite supported for isolated tests)
 - **API testing:** pytest, FastAPI TestClient, HTTPX
 - **UI:** React components and CSS / inline styling
 - **Testing foundation:** Create React App and React Testing Library dependencies
@@ -40,7 +41,7 @@ Assessment workflows involve more than assigning a score. Instructors need consi
 
 ```text
 gradeflow/
-├── backend/                # FastAPI service, schemas, rubric logic, API tests
+├── backend/                # FastAPI service, SQLAlchemy models, Alembic migrations, API tests
 │   ├── app/
 │   ├── tests/
 │   └── pyproject.toml
@@ -69,7 +70,7 @@ npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).
+The development server starts at [http://localhost:3000](http://localhost:3000).\n\nThe instructor dashboard reads persisted assignments from the API and posts new assignments to it. Start the backend and PostgreSQL as described in `backend/README.md`; configure `REACT_APP_API_URL` only if the API is not at `http://localhost:8000`.
 
 Create a production build:
 
@@ -107,7 +108,7 @@ This repository is an early prototype. In particular:
 
 - The UI currently uses hard-coded example assignments, submissions, and grades.
 - The login screen is a role-selection demo, not real authentication or authorization.
-- The FastAPI backend is an initial service foundation with health and deterministic rubric-validation endpoints; it has no database, authentication, authorization, or persistent submission store.
+- The FastAPI backend persists assignments and rubric criteria with SQLAlchemy and Alembic migrations. Authentication, authorization, student submissions, and persistent review history are not yet implemented.
 - The review modal is a demo placeholder. It does not generate grades; no submission evidence or grading backend is connected.
 - The current browser-side API approach is not suitable for production secrets. API credentials should be held by a secured server-side service, never shipped to the browser.
 - AI-generated feedback needs rubric-grounded evaluation, transparent evidence, human review, and an appeal/correction workflow.
