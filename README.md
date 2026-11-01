@@ -159,8 +159,8 @@ This is an active prototype, not a production academic grading system.
 - Submission content is text-only; file uploads and private object storage are not implemented.
 - Instructor grading, grade finalization, grade publication, review history, and audit logs are not implemented.
 - The review interface contains illustrative sample records and does not generate grades.
-- Authentication needs additional production controls, including login throttling, password reset, email verification, MFA, token revocation, and tenant isolation.
-- PostgreSQL configuration is present; CI migration verification currently uses SQLite rather than a live PostgreSQL service.
+- Instructor assignment and submission access is ownership-scoped; institution-wide tenancy, enrollment, and course membership are not implemented.
+- Authentication still needs login throttling, password reset, email verification, MFA, token revocation, and audit logging.
 
 Do not use this prototype for consequential academic decisions or real student records without appropriate security, privacy, and institutional review.
 
