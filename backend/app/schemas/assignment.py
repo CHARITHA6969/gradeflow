@@ -1,14 +1,17 @@
 from datetime import date, datetime
+from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class CriterionCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
     name: str = Field(min_length=1, max_length=160)
     max_points: float = Field(gt=0, le=1000)
 
 
 class AssignmentCreate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
     title: str = Field(min_length=1, max_length=160)
     description: str = Field(default="", max_length=5000)
     due_date: date | None = None
@@ -21,8 +24,11 @@ class AssignmentCreate(BaseModel):
         normalized_names = [criterion.name.strip().casefold() for criterion in self.criteria]
         if len(normalized_names) != len(set(normalized_names)):
             raise ValueError("Rubric criterion names must be unique.")
-        rubric_points = sum(criterion.max_points for criterion in self.criteria)
-        if rubric_points > self.total_points:
+        rubric_points = sum(
+            (Decimal(str(criterion.max_points)) for criterion in self.criteria),
+            start=Decimal("0"),
+        )
+        if rubric_points > Decimal(str(self.total_points)):
             raise ValueError("Rubric criterion points cannot exceed the assignment total.")
         return self
 
